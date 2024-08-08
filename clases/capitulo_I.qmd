@@ -1,0 +1,235 @@
+---
+title: "Estadística I"
+subtitle:  "Sección 2: Capítulo I"
+author: "Felipe López S"
+format: 
+  revealjs:
+    theme: serif
+    smaller: true
+    slide-number: true
+    show-slide-number: print
+    auto-stretch: false
+editor: visual
+---
+
+# Presentación
+
+-   Profesor: Felipe López S.
+
+    -   lopezsabalaga\@ gmail.com
+
+    -   [LinkedIn](https://www.linkedin.com/in/felipelopezsab/)
+
+-   Ayudante:
+
+-   Clases martes y miércoles 17:30 - 18:50
+
+# ¿Por qué estudiar Estadística?
+
+La Estadística es una ciencia que se encarga de estudiar la incertidumbre basada en las leyes de la probabilidad.
+
+Viene del término alemán *statistik*, la cual hace referencia a las ciencias del Estado. Surge debido al origen de los Estados modernos en el siglo 16, que debían colectar datos de los habitantes y la economía.
+
+Una de las herramientas de recolección de datos es el ***Censo*** de población.
+
+## Avances históricos
+
+::: columns
+::: {.column width="60%"}
+En el siglo 19 la teoría de la probabilidad fue desarrollada por matématicos, entre ellos, Jacob Bernoulli, Karl Friederich Gauss y Pierre Simon Laplace.
+
+Al final de este siglo empezaron los primeros avances en inferencia estadística.
+
+El objetivo es obtener conclusiones, mediante métodos matématicos, a partir de una **muestra** de datos.
+
+En el siglo 20 fueron múltiples las áreas donde se desarrolló y aplicó el conocimiento estadístico: Agricultura, medicina, marketing, encuestas, etc...
+:::
+
+::: {.column width="40%"}
+![Karl Friederich Gauss](gauss1.png)
+:::
+:::
+
+## En la actualidad
+
+::: columns
+::: {.column width="60%"}
+En la actualidad los campos aplicados de la ciencia estadística son cada vez más relevantes.
+
+Uno de ellos es la Ciencia de Datos, la cual comprende un paradigma en la utilización de datos para la toma de decisiones en el ámbito privado o público.
+
+Adicionalmente, la Inteligencia Artificial (IA) se ha establecido como un campo interdisciplinario fundamentado en el uso de datos masivos. Cuyo usos van desde la generación de imágenes y texto hasta la detección de enfermedades.
+:::
+
+::: {.column width="40%"}
+![](ciencia%20de%20datos.png){width="1300"}
+
+![Alan Turing, pionero de las ciencias de la computación](turing.png){width="200" height="200"}
+:::
+:::
+
+# Datos Tabulares 
+
+Existen muchas formas de almacenar y presentar datos. La manera más utilizada es la presentación en forma tabular, esta consiste en una presentación bidimensional. Generalmente, las filas representan unidades observadas y las columnas sus características. Por ejemplo:
+
+```{r}
+#| echo: false
+library(tidyverse)
+datos::diamantes %>% mutate(id_diamante = 1:n()) %>% select(id_diamante, precio, quilate, corte) %>% head() %>% knitr::kable()
+```
+
+# Descripción Gráfica de los Datos
+
+*“The simple graph has brought more information to the data analyst’s mind than any other device.”*— John Tukey
+
+Los datos y resultados de un experimento deben ser presentados de manera clara, concisa y debe facilitar el trabajo de quién los observa.
+
+A lo largo del tiempo se han desarrollado técnicas y consejos para visualizar datos. Usted puede visitar los siguientes recursos adicionales:
+
+[Fundamentals of Data Visualization, Claus Wilke](https://clauswilke.com/dataviz/)
+
+[Capítulo 03, R para Ciencia de Datos (Wickham & Grolemund, 2017)](https://es.r4ds.hadley.nz/03-visualize.html)
+
+# Datos Cualitativos
+
+Los datos cualitativos son medidas de los "tipos" o características de un fenómeno observado, pueden representar un nombre, símbolo o un código númerico. Ej: sexo de la persona, color del cabello, mes de nacimiento.
+
+En estadística son referidas como variables categóricas, porque generan categorías.
+
+## Tabla de Frecuencias
+
+Un conjunto de datos categóricos o cualitativos que tenga un rango de valores reducido puede ser representado en una tabla de frecuencias. Indica cuantas veces aparece un dato dentro del conjunto de observaciones.
+
+```{r}
+#| echo: false
+library(tidyverse); library(datos)
+
+datos::diamantes %>% count(corte) %>% janitor::adorn_totals() %>% rename("Corte del Diamante" = corte, Frecuencia = n) %>% knitr::kable(format.args = list(big.mark = "."))
+```
+
+## Gráfico de Frecuencias
+
+Esta tabla se puede representar en un plano cartesiano, indicando en el eje Y la frecuencia y en el eje X el rango de los datos.
+
+```{r}
+
+datos::diamantes %>% count(corte) %>% ggplot(aes(x=corte, y=n)) +
+  geom_point(color = "#40826D") + 
+  geom_segment( aes(x=corte, xend=corte, y=0, yend=n), color = "#40826D") + labs(x = "Corte del Diamante", 
+                                                              y = "Frecuencia") + theme_light()
+```
+
+## Gráfico de Frecuencias
+
+También podemos utilizar un gráfico de barras:
+
+```{r}
+
+datos::diamantes %>% ggplot(aes(x=corte)) +
+  geom_bar( fill = "#40826D") + labs(x = "Corte del Diamante", 
+                                                              y = "Frecuencia") + theme_light()
+```
+
+## Tabla de Frecuencias Relativas
+
+La Frecuencia relativa indica la proporción de los datos que tienen el valor indicado. Esto se calcula dividiendo la frecuencia del valor por el total de los datos: $f/n$. En la tabla de diamantes, obtendríamos:
+
+```{r}
+
+datos::diamantes %>% count(corte) %>% mutate(frec_relativa = paste0(n, "/53.940"), frec_relativa_porcentaje = round(n/sum(n),2)) %>% janitor::adorn_totals()  %>% rename("Corte del Diamante" = corte, Frecuencia = n) %>% knitr::kable(format.args = list(big.mark = ".", decimal.mark = ","))
+```
+
+## Gráfico de Torta 
+
+El gráfico consiste en dividir una circunferencia respecto a la frecuencia relativa de cada categoría.
+
+```{r}
+bp<- datos::diamantes %>% count(corte) %>% mutate(frec_relativa = paste0(n, "/53.940"), freq= round(n/sum(n),2)) %>% 
+ggplot( aes (x="", y = freq, fill = factor(corte))) + 
+  geom_col(position = 'stack', width = 1) +
+  geom_text(aes(label = paste(round(freq / sum(freq) * 100, 1), "%"), x = 1.3),
+            position = position_stack(vjust = 0.5)) +
+  theme_classic() +
+  scale_fill_brewer(palette = "Set3") +
+  theme(plot.title = element_text(hjust=0.5),
+        axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank()) +
+  labs(fill = "Corte del diamante",
+       x = NULL,
+       y = NULL,
+       title = "Gráfico de Torta", 
+       size = 5) + 
+  coord_polar("y")
+bp
+```
+
+## Gráfico de Torta II
+
+Sin embargo, su uso no es recomendable si existen muchas categorías ya que no existe punto de referencia y es díficil comparar.
+
+![Usted no lo haga](grafico_torta.jpeg)
+
+# Datos Cuantitativos 
+
+Los datos cuantitativos son aquellos que pueden ser representados númericamente, incluye todo lo que pueda ser contado, medido, o sea posible asignarle un valor númerico. Por ejemplo:
+
+```{r}
+#promedio de temperatura diario
+datos::clima %>% filter(origen == "JFK") %>% group_by(mes, dia) %>% mutate(temperatura_dia = round(mean((temperatura-32)*(5/9)), 1)) %>% distinct(anio, mes, dia, temperatura_dia) %>% ungroup() %>% head() %>%  knitr::kable()
+```
+
+## Gráfico de Frecuencias
+
+Al igual que los datos cuantitativos, pueden ser presentados en frecuencias y frecuencias relativas.
+
+```{r}
+library(patchwork)
+p1 <- datos::clima %>% filter(origen == "JFK") %>% group_by(mes, dia) %>% mutate(temperatura_dia = round(mean((temperatura-32)*(5/9)), 1)) %>% distinct(anio, mes, dia, temperatura_dia) %>% ungroup() %>% group_by(temperatura_dia) %>%  count() %>% ggplot(aes(x= temperatura_dia, y=n)) +
+  geom_point(color = "#40826D") + 
+  geom_segment( aes(x=temperatura_dia, xend=temperatura_dia, y=0, yend=n), color = "#40826D") + labs(title = "Frecuencia de la temperatura", x = "Temperatura diaria", 
+                                                              y = "Frecuencia") + theme_light()
+p2 <- datos::clima %>% filter(origen == "JFK") %>% group_by(mes, dia) %>% mutate(temperatura_dia = round(mean((temperatura-32)*(5/9)), 1)) %>% distinct(anio, mes, dia, temperatura_dia) %>% ungroup() %>% group_by(temperatura_dia) %>%  count() %>% ungroup() %>% mutate(frec_relativa = round(n*100/sum(n),1)) %>% ggplot(aes(x=temperatura_dia, y = frec_relativa)) +
+  geom_point(color = "#40826D") + 
+  geom_segment( aes(x=temperatura_dia, xend=temperatura_dia, y=0, yend=frec_relativa), color = "#40826D") + labs(title = "Frecuencia relativa(%)", x = "Temperatura diaria", 
+                                                              y = "Frecuencia relativa(%)") + theme_light()
+
+p1 + p2
+```
+
+## Histograma de Frecuencias
+
+Como podemos observar, si el rango de los datos observados es muy amplio la presentación de los gráficos anteriores es difusa. Por esto es conveniente presentarlos mediante un histograma.
+
+Un histograma agrupa los datos en intervalos adyacentes, el largo de estos intervalos puede variar. Permite representar valores de manera más armoniosa, identificando en que valor se suelen concentrar los datos.
+
+```{r}
+p1 <- datos::clima %>% filter(origen == "JFK") %>% group_by(mes, dia) %>% mutate(temperatura_dia = round(mean((temperatura-32)*(5/9)), 1)) %>% distinct(anio, mes, dia, temperatura_dia) %>% ungroup() %>% ggplot(aes(x=temperatura_dia))  + 
+  geom_histogram(color="white", fill="#40826D", binwidth = 5) + labs(title = "Datos agrupados en 5 grados C°", y = "Frecuencia", x = "Temperatura") + scale_x_continuous(breaks = seq(-10, 30, by = 5)) + theme_light()
+
+
+p2 <- datos::clima %>% filter(origen == "JFK") %>% group_by(mes, dia) %>% mutate(temperatura_dia = round(mean((temperatura-32)*(5/9)), 1)) %>% distinct(anio, mes, dia, temperatura_dia) %>% ungroup() %>% ggplot(aes(x=temperatura_dia))  + 
+  geom_histogram(color="white", fill="#40826D", binwidth = 3) + labs(title = "Datos agrupados en 3 grados C°", y = "Frecuencia", x = "Temperatura") + scale_x_continuous(breaks = seq(-10, 30, by = 3)) + theme_light()
+
+p1 + p2
+```
+
+## Frecuencia Acumulada 
+
+El objetivo del gráfico de frecuencia acumulada es observar el número de observaciones que se encuentran por sobre (o debajo) de un valor particular.
+
+```{r}
+p1 <- datos::clima %>% filter(origen == "JFK") %>% group_by(mes, dia) %>% mutate(temperatura_dia = round(mean((temperatura-32)*(5/9)), 1)) %>% distinct(anio, mes, dia, temperatura_dia) %>% ungroup() %>% group_by(temperatura_dia) %>%  count() %>% ungroup() %>% mutate(acum = cumsum(n)) %>% ggplot(aes(x = temperatura_dia, y = acum)) + geom_line(size = 2, color = "#40826D") + labs(title = "Frecuencia Acumulada", y = "Frecuencia Acumulada", x = "Temperatura") + scale_x_continuous(breaks = seq(-10, 30, by = 5)) + scale_y_continuous(breaks = seq(0, 400, by = 50)) + theme_light()
+
+p2 <- datos::clima %>% filter(origen == "JFK") %>% group_by(mes, dia) %>% mutate(temperatura_dia = round(mean((temperatura-32)*(5/9)), 1)) %>% distinct(anio, mes, dia, temperatura_dia) %>% ungroup() %>% group_by(temperatura_dia) %>%  count() %>% ungroup() %>% mutate(acum = cumsum(n), acum_perc = round(acum*100/sum(acum), 1)) %>% ggplot(aes(x = temperatura_dia, y = acum_perc)) + geom_line(size = 2, color = "#40826D") + labs(title = "Frecuencia Acumulada Relativa (%)" , y = "Frecuencia Acumulada Relativa (%)", x = "Temperatura") + scale_x_continuous(breaks = seq(-10, 30, by = 5)) + scale_y_continuous(breaks = seq(0, 1, 0.1), labels = scales::percent) + theme_light()
+
+p1+p2
+```
+
+## Diagramas de Dispersión
+
+Un diagrama de dispersión es utilizado para visualizar las
+
+```{r}
+
+```
