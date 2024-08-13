@@ -1,0 +1,101 @@
+---
+title: "Estadística I"
+subtitle:  "Sección 2: Capítulo II"
+author: "Felipe López S"
+format: 
+  revealjs:
+    theme: serif
+    smaller: true
+    slide-number: true
+    show-slide-number: print
+    auto-stretch: false
+    footer: "Capítulo II"
+editor: visual
+---
+
+# Descripción numérica de los datos
+
+Luego de describir gráficamente un conjunto de datos, es necesario observar sus características numéricas.
+
+Estas características se calculan mediante estadísticos, los cuales son construcciones matemáticas que permiten representar, entre otros, la tendencia central (localización) y la variabilidad de los datos.
+
+Los estadísticos de tendencia central son: media, mediana, moda y percentiles.
+
+Los estadísticos de variabilidad son: rango, varianza, desviación estándar, coeficiente de variación.
+
+Adicionalmente, es posible obtener medidas de asociación de dos variables: covarianza y coeficiente de correlación.
+
+# Medidas de localización: Media
+
+Suponga que tenemos un conjunto de datos de $n$ valores númericos $x_{1}, x_{2}, ...., x_{n}$. La media muestral $(\bar{x})$ es el promedio aritmético de estos valores.
+
+$$
+\bar{x} = \sum_{i=1}^{n}\frac{x_{i}}{n}
+$$
+
+La media nos entrega el valor donde se concentran los datos.
+
+Adicionalmente, si tenemos una tabla de datos con $k$ valores distintos $v_{1}, ..., v_{k}$ con frecuencias correspondientes $f_{1}, ..., f_{k}$. La media puede ser calculada como:
+
+$$
+\bar{x} = \sum_{i=1}^{k}\frac{v_{i}f_{i}}{n}
+$$
+
+## Cálculo de la Media
+
+Si consideramos los datos de los diamantes, podemos calcular su media siguiendo la fórmula anteriormente descrita. La estimación del precio medio es:
+
+```{r}
+#| echo: false
+#| output: false
+mean(datos::diamantes$precio)
+```
+
+$$
+\overline{precio} = \sum_{i=1}^{53.940}\frac{precio_{i}}{53.940} = 3.932,8
+$$
+
+## Cálculo de la media: frecuencias
+
+Considere el peso corporal de 20 pingüinos del Archipiélago de Palmer seleccionados al azar. La tabla de frecuencias es:
+
+```{r}
+set.seed(1234)
+library(tidyverse)
+datos::pinguinos  %>% filter(masa_corporal_g > 0) %>% count(masa_corporal_g) %>% filter(masa_corporal_g %in% c(2700, 3900, 4250, 4800, 5750)) %>% janitor::adorn_totals() %>% rename("Peso Corporal Pingüinos" = masa_corporal_g, Frecuencia = n) %>% knitr::kable(format.args = list(big.mark = ".", decimal.mark = ","))
+
+```
+
+## Cálculo de la media: frecuencias
+
+Siguiendo los datos de la tabla anterior, el cálculo del peso corporal promedio con frecuencias es:
+
+$$
+\overline{peso\hbox{ }corporal} = \sum_{i=1}^{5}\frac{peso_{i}frecuencia_{i}}{20} = \\\
+\frac{2.700 \cdot 1+ 3.900\cdot 10 + 4.250\cdot 5 + 4.800 \cdot 3 + 5.750 \cdot 1}{20} = 4.155$$
+
+## Medidas de localización: Mediana
+
+Si el conjunto de datos es **impar**, la mediana muestral es el valor del medio de los datos ordenados de forma ascendente. Si los datos son **pares**, la mediana muestral es el valor promedio de los dos datos de al medio\^\[[Fuente](https://www.sciencedirect.com/topics/mathematics/sample-median#:~:text=Simply%20put%2C%20if%20the%20sample,of%20the%20two%20middle%20values.)\].
+
+En términos generales, si ordenamos los datos de menor a mayor (ascendente): $X_{(1)} \leq X_{(2)} \leq \cdot \cdot \cdot \leq X_{(n)}$
+
+Si $n$ es impar, calcula $m = (n+1)/2$, la mediana muestral será $M = X_{(m)}$.
+
+Si $n$ es par, calcula $m = n/2$, la mediana muestral será $M = (X_{(m)} + X_{(m+1)})/2$.
+
+## Media: Ejemplo
+
+Considere las siguientes notas en un curso de 5 personas: $notas : 1.1, 2.3, 1.7, 3.9, 3.1$.
+
+Calcule la media y la mediana de las notas.
+
+Ahora, considere a un alumno que rindió la prueba con retraso y obtuvo nota $5.7$
+
+## Media: Solución al ejemplo
+
+1.  La media es el promedio de las observaciones: $promedio = \frac{1.1 + 2.3 + 1.7 + 3.9 + 3.1}{5} = 2.42$
+
+2.  Ordenar los datos de menor a mayor: $1.1, 1.7, 2.3, 3.1, 3.9$.
+
+3.  
